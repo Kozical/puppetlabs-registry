@@ -119,6 +119,29 @@ Puppet::Type.newtype(:registry_value) do
       end
       super(currentvalue, newvalue)
     end
+
+    def insync?(current)
+      if (@resource[:update_only_on_refresh]) then
+        true
+      else
+        current == should
+      end
+    end
+  end
+
+  newparam(:update_only_on_refresh) do
+    desc 'A flag indicating whether or not the registry_value should be updated '+
+         'only when called as part of a refresh event'
+    defaultto false
+    newvalues(true,false)
+  end
+
+  def refresh
+    if self[:update_only_on_refresh] then
+      # update the data in the provider, which will save the data to the registry
+      provider.data = self[:data]
+      provider.flush
+    end
   end
 
   # Autorequire the nearest ancestor registry_key found in the catalog.

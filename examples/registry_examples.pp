@@ -82,6 +82,14 @@ class registry_example {
     type   => array,
     data   => $some_array,
   }
+  
+  registry_value { 'HKLM\Software\Vendor\Bar\datetimenow':
+    ensure                 => present,
+    data                   => strftime('%a, %d %b %Y %H:%M:%S %z'),
+    update_only_on_refresh => true,
+    subscribe              => Registry_value['HKLM\Software\Vendor\Bar\valuearray3'],
+  }
+
 }
 
 include registry_example
